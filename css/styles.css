@@ -1,4 +1,4 @@
-#wrapper-settings-groupsyncwithrole {
+#wrapper-settings-groupsyncwithrole, #crm-main-content-wrapper .CRM_Admin_Form_Generic table tbody {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-auto-flow: row;

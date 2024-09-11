@@ -2,7 +2,7 @@
 <extension key="groupsyncwithrole" type="module">
   <file>groupsyncwithrole</file>
   <name>Group Sync with WordPress Role</name>
-  <description>This extension manages the synchronization between CiviCRM groups and the WordPress.</description>
+  <description>This extension manages the synchronization between CiviCRM groups and the WordPress role.</description>
   <license>AGPL-3.0</license>
   <maintainer>
     <author>Dewy</author>

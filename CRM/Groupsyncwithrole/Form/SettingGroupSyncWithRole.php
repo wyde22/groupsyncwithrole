@@ -200,10 +200,6 @@ class CRM_Groupsyncwithrole_Form_SettingGroupSyncWithRole extends CRM_Admin_Form
     
     }
     
-    echo '<pre>';
-    var_dump($valuesFilter);
-    echo '</pre>';
-    
     parent::postProcess();
   }
 
