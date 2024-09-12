@@ -41,16 +41,19 @@
     }
 
     function addEnableButtons() {
-        const selects = document.querySelectorAll('select');
+        const tr = document.querySelectorAll('tr');
 
-        selects.forEach(select => {
+        tr.forEach(tr => {
             const enableButton = document.createElement('button');
             enableButton.type = 'button';
-            enableButton.textContent = 'Enable Options for ' + select.id;
+            enableButton.textContent = 'Enable Options for ' + tr.id;
             enableButton.onclick = function() {
-                enableOptionsForSelect(select);
+                enableOptionsForSelect(tr);
             };
-            select.parentNode.insertBefore(enableButton, select.nextSibling);
+
+            const row = document.createElement('td');
+            row.appendChild(enableButton);
+            tr.insertBefore(row, tr.firstChild);
         });
     }
 
