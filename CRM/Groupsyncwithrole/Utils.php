@@ -29,4 +29,32 @@
     
       return $roleSelect;
     }
-  }
+    
+    public static function getSettingsGroupSyncWPRoleForMap() {
+      $tab_select_settings_group = [];
+      $tab_select_settings_roles = [];
+      $tab_select_settings = [];
+      $map = [];
+  
+      $i = 1;
+      do {
+        $key = Civi::settings()->get('select_group_' . $i);
+        $value = Civi::settings()->get('select_rolecms_' . $i);
+        
+        if(!empty($key) && !empty($value)) {
+          $map[$key] = $value;
+        }
+  
+        $i++;
+      } while ($i <= 10);
+  
+      /*echo '<pre>';
+      var_dump($tab_select_settings_group);
+      var_dump($tab_select_settings_roles);
+      var_dump($map);
+      die();
+      echo '</pre>';*/
+      //return $tab_select_settings;
+      
+    }
+}
