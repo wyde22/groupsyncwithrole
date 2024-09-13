@@ -162,15 +162,18 @@ function groupsyncwithrole_civicrm_enable(): void {
             'user_login' => sanitize_text_field($contact['email_data'][0]['email']),
             'first_name' => sanitize_text_field($contact['first_name']),
             'last_name' => sanitize_text_field($contact['last_name']),
-            'user_email' => sanitize_email($contact['email_data'][0]['email']),
-            'user_pass' => wp_generate_password(8),
+            'user_email' => $contact['email_data'][0]['email'],
+            //'user_pass' => wp_generate_password(8),
           ];
+          
+          $func_wp_functionnality = new CRM_Utils_System_WordPress();
+          $user_id_wp = $func_wp_functionnality->createUser($user_data, $contact['email_data'][0]['email']);
   
-          $user_id_wp = wp_insert_user($user_data);
+          /*$user_id_wp = wp_insert_user($user_data);
           if ( is_wp_error( $user_id_wp ) ) {
             Civi::log()->debug('Creation of user WordPress doesn\'t works : contact civicrm : ' . $objectRef[0]);
-          }
-  
+          }*/
+          Civi::log()->debug('id new user WordPress ' . print_r($user_id_wp,1));
           $nu = new WP_User($user_id_wp);
           foreach ($map as $groupName => $roleName) {
             if ($groupContacts['status'] == 'Added' && $groupName == $groupContacts['group_id.name']) {
@@ -178,14 +181,13 @@ function groupsyncwithrole_civicrm_enable(): void {
               $nu->add_role($roleName);
             }
           }
-  
-          Civi::log()->debug('log before register user');
-          $register_user = register_new_user( $user_data['user_login'], $user_data['user_email'] );
+          
+          /*$register_user = register_new_user( $user_data['user_login'], $user_data['user_email'] );
           if( is_wp_error( $register_user ) ) {
             Civi::log()->debug('Register of user WordPress doens\'t works : contact civicrm : ' . $objectRef[0]);
           } else {
             Civi::log()->debug('Register user WordPress is ok : ' . $objectRef[0]);
-          }
+          }*/
           
         }
       }
