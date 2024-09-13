@@ -26,3 +26,8 @@ If you find a problem, you can create an issue in this repo please
 
 For a good synchronization between CiviCRM groups and role of user, the user contact must exist in the table `UFMatch`.
 Often i test my code with extension `cmsuser`. It's necessary to have a `civirules` etxension in your project
+
+## Next steps
+
+- Add support to create a CMS user if it doesn't already exist
+- Change CMS user's role when the contact is removed/suppressed from a sync group
