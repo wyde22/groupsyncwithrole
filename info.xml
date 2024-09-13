@@ -31,7 +31,6 @@
     <angularModule>crmGroupsyncwithrole</angularModule>
   </civix>
   <requires>
-    <ext>civirules</ext>
     <ext>cmsuser</ext>
   </requires>
   <mixins>
