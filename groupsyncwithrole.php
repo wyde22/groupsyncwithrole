@@ -161,7 +161,10 @@ function groupsyncwithrole_civicrm_enable(): void {
           $user_data = [
             'cms_name' => sanitize_text_field($contact['email_data'][0]['email']), // as user_login
             'user_email' => $contact['email_data'][0]['email'],
-            //'user_pass' => wp_generate_password(8),
+            'cms_pass' => wp_generate_password(8),
+            'contactID' => $objectRef[0],
+            'first_name' => $contact['first_name'],
+            'last_name' => $contact['last_name']
           ];
           
           $func_wp_functionnality = new CRM_Utils_System_WordPress();
