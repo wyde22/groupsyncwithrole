@@ -14,8 +14,7 @@ function groupsyncwithrole_civicrm_config(&$config): void {
   Civi::resources()->addStyleFile('groupsyncwithrole', 'css/styles.css');
   Civi::resources()->addScriptFile('groupsyncwithrole', 'js/script.js');
   
-  CRM_Groupsyncwithrole_Utils::getSettingsGroupSyncWPRoleForMap();
-  
+  // in the future hook symfony in this place !!
   //Civi::dispatcher()->addListener('hook_civicrm_post', ['CRM_Groupsyncwithrole_SyncWpRole', 'syncWpRole'], -1000);
 }
 
@@ -51,10 +50,13 @@ function groupsyncwithrole_civicrm_enable(): void {
    */
   function groupsyncwithrole_civicrm_post(string $op, string $objectName, int $objectId, &$objectRef) {
     // name groupe table group civicrm => rôle WP,
-    $map = [
+    // example
+    /*$map = [
       'medical_2' => 'medical',
       'Auteur_3' => 'author'
-    ];
+    ];*/
+    
+    $map = CRM_Groupsyncwithrole_Utils::getSettingsGroupSyncWPRoleForMap();
   
     if (in_array($objectName, ['GroupContact']) && in_array($op,
         ['create', 'edit', 'delete'])) {

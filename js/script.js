@@ -1,26 +1,26 @@
 (function($) {
     document.addEventListener('DOMContentLoaded', function () {
-        // Fonction pour désactiver toutes les options sélectionnées sur la page
+        // Array to store the values of the selected options
+        const selectedValues = [];
+
+        // Function to disable all selected options on the page
         function disableSelectedOptions() {
-            // Obtenir tous les éléments <select> sur la page
+            // Get all <select> elements on the page
             const selectElements = document.querySelectorAll('select');
 
-            // Tableau pour stocker les valeurs des options sélectionnées
-            const selectedValues = [];
-
-            // Parcourir tous les éléments <select>
+            // Cycle through all <select> elements
             selectElements.forEach(select => {
-                // Obtenir l'option actuellement sélectionnée
+                // Get the currently selected option
                 const selectedOption = select.options[select.selectedIndex];
 
-                // Vérifier si une option est sélectionnée
+                // Check if an option is selected
                 if (selectedOption && selectedOption.value !== "0") {
-                    // Ajouter la valeur de l'option sélectionnée au tableau
+                    // Add the value of the selected option to the array
                     selectedValues.push(selectedOption.value);
                 }
             });
 
-            // Désactiver les options ayant les valeurs sélectionnées
+            // Disable options with selected values
             selectElements.forEach(select => {
                 const options = select.querySelectorAll('option');
 
@@ -35,18 +35,18 @@
             });
         }
 
+        // Call the function to deactivate the selected options on page load
+        disableSelectedOptions();
+
         function removeItemArray(item) {
             let index = selectedValues.indexOf(item);
             if (index !== -1) {
                 selectedValues.splice(index, 1);
-                updateOptions();
+                disableSelectedOptions();
             }
         }
 
-        // Appeler la fonction pour désactiver les options sélectionnées au chargement de la page
-        disableSelectedOptions();
-
-        // Ajouter un écouteur d'événements de changement pour chaque <select> pour mettre à jour les options désactivées en temps réel
+        // Add a change event listener for each <select> to update disabled options in real time
         const selectElements = document.querySelectorAll('select');
         selectElements.forEach(select => {
             select.addEventListener('change', disableSelectedOptions);

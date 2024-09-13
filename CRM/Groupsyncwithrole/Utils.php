@@ -31,9 +31,6 @@
     }
     
     public static function getSettingsGroupSyncWPRoleForMap() {
-      $tab_select_settings_group = [];
-      $tab_select_settings_roles = [];
-      $tab_select_settings = [];
       $map = [];
   
       $i = 1;
@@ -47,14 +44,7 @@
   
         $i++;
       } while ($i <= 10);
-  
-      /*echo '<pre>';
-      var_dump($tab_select_settings_group);
-      var_dump($tab_select_settings_roles);
-      var_dump($map);
-      die();
-      echo '</pre>';*/
-      //return $tab_select_settings;
       
+      return $map;
     }
 }
