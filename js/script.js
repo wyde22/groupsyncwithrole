@@ -1,73 +1,104 @@
 (function($) {
-    function disableSelectedOptions() {
-        const selects = document.querySelectorAll('select');
-        const selectedValues = [];
+    document.addEventListener('DOMContentLoaded', function () {
+        // Fonction pour désactiver toutes les options sélectionnées sur la page
+        function disableSelectedOptions() {
+            // Obtenir tous les éléments <select> sur la page
+            const selectElements = document.querySelectorAll('select');
 
-        // Récupérer toutes les valeurs sélectionnées
-        selects.forEach(select => {
-            const selectedOption = select.options[select.selectedIndex];
-            if (selectedOption && selectedOption.value) {
-                selectedValues.push(selectedOption.value);
-            }
-        });
+            // Tableau pour stocker les valeurs des options sélectionnées
+            const selectedValues = [];
 
-        // Désactiver les options sélectionnées dans les autres select
-        selects.forEach(select => {
-            Array.from(select.options).forEach(option => {
-                if (selectedValues.includes(option.value) && !option.selected) {
-                    option.disabled = true;
-                } else {
-                    option.disabled = false;
+            // Parcourir tous les éléments <select>
+            selectElements.forEach(select => {
+                // Obtenir l'option actuellement sélectionnée
+                const selectedOption = select.options[select.selectedIndex];
+
+                // Vérifier si une option est sélectionnée
+                if (selectedOption && selectedOption.value !== "0") {
+                    // Ajouter la valeur de l'option sélectionnée au tableau
+                    selectedValues.push(selectedOption.value);
                 }
             });
-        });
-    }
 
-    function enableAllOptions() {
-        const selects = document.querySelectorAll('select');
+            // Désactiver les options ayant les valeurs sélectionnées
+            selectElements.forEach(select => {
+                const options = select.querySelectorAll('option');
 
-        // Réactiver toutes les options
-        selects.forEach(select => {
-            Array.from(select.options).forEach(option => {
-                option.disabled = false;
+                options.forEach(option => {
+                    if (selectedValues.includes(option.value) && option.value !== "0") {
+                        option.classList.add('disabled-option');
+                        option.style.cursor = 'not-allowed';
+                    } else {
+                        option.classList.remove('disabled-option');
+                    }
+                });
             });
+        }
+
+        function removeItemArray(item) {
+            let index = selectedValues.indexOf(item);
+            if (index !== -1) {
+                selectedValues.splice(index, 1);
+                updateOptions();
+            }
+        }
+
+        // Appeler la fonction pour désactiver les options sélectionnées au chargement de la page
+        disableSelectedOptions();
+
+        // Ajouter un écouteur d'événements de changement pour chaque <select> pour mettre à jour les options désactivées en temps réel
+        const selectElements = document.querySelectorAll('select');
+        selectElements.forEach(select => {
+            select.addEventListener('change', disableSelectedOptions);
         });
-    }
 
-    function enableOptionsForSelect(select) {
-        Array.from(select.options).forEach(option => {
-            option.disabled = false;
+        // Add buttons to even rows and set up event listeners
+        const rows = document.querySelectorAll('.form-layout tr');
+        rows.forEach((row, index) => {
+            if ((index + 1) % 2 === 0) { // even rows (1-based index)
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.classList.add('default', 'crm-button');
+                button.textContent = 'Break the mapping';
+
+                button.addEventListener('click', function () {
+                    const selectsInRow = row.querySelectorAll('select');
+
+                    // retrieve class of select group on the same line of select role
+                    const idSelect = selectsInRow[0].id;
+                    const lastCharacter = idSelect.slice(-1);
+                    let idSelectGroup = 'select_group_' + lastCharacter;
+
+                    // select group civicrm
+                    const selectGroupLine = document.getElementById(idSelectGroup);
+                    if(selectGroupLine) {
+                        const optionsGroupSelect = selectGroupLine.options;
+                        for(let i = 0; i < optionsGroupSelect.length; i++) {
+                            if(optionsGroupSelect[i].selected === true) {
+                                optionsGroupSelect[i].selected = false;
+                                removeItemArray(optionsGroupSelect[i].value);
+                            }
+                        }
+                        selectGroupLine.value = "0";
+                    }
+
+                    // select WordPress role
+                    selectsInRow.forEach(selectWPRole => {
+                        const optionWPRole = selectWPRole.querySelectorAll('option');
+                        optionWPRole.forEach(optionWPRole => {
+                            if(optionWPRole.selected === true) {
+                                optionWPRole.selected = false;
+                                removeItemArray(optionWPRole.value);
+                            }
+                        });
+                        selectWPRole.value = "0";
+                    });
+                });
+
+                const td = document.createElement('td');
+                td.appendChild(button);
+                row.appendChild(td);
+            }
         });
-    }
-
-    function addEnableButtons() {
-        const tr = document.querySelectorAll('tr');
-
-        tr.forEach(tr => {
-            const enableButton = document.createElement('button');
-            enableButton.type = 'button';
-            enableButton.textContent = 'Enable Options for ' + tr.id;
-            enableButton.onclick = function() {
-                enableOptionsForSelect(tr);
-            };
-
-            const row = document.createElement('td');
-            row.appendChild(enableButton);
-            tr.insertBefore(row, tr.firstChild);
-        });
-    }
-
-    // Ajouter un écouteur d'événement pour chaque select pour mettre à jour les options désactivées à chaque changement
-    document.querySelectorAll('select').forEach(select => {
-        select.addEventListener('change', disableSelectedOptions);
     });
-
-    // Ajouter les boutons de réactivation pour chaque select
-    window.onload = function() {
-        addEnableButtons();
-    };
-
-
-
-
 })(CRM.$ || cj);

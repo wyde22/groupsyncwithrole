@@ -4,3 +4,10 @@
     grid-auto-flow: row;
     margin: 50px 0;
 }
+
+.disabled-option {
+    color: #ccc;
+    pointer-events: none;
+    background-color: #1D2327;
+    cursor: not-allowed;
+}
