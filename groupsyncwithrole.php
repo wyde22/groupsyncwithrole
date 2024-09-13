@@ -159,9 +159,7 @@ function groupsyncwithrole_civicrm_enable(): void {
             ->first();
   
           $user_data = [
-            'user_login' => sanitize_text_field($contact['email_data'][0]['email']),
-            'first_name' => sanitize_text_field($contact['first_name']),
-            'last_name' => sanitize_text_field($contact['last_name']),
+            'cms_name' => sanitize_text_field($contact['email_data'][0]['email']), // as user_login
             'user_email' => $contact['email_data'][0]['email'],
             //'user_pass' => wp_generate_password(8),
           ];
