@@ -139,6 +139,55 @@ function groupsyncwithrole_civicrm_enable(): void {
       
       } else {
         Civi::log()->debug('Contact ID '. $objectRef[0] .' doesn\'t exist in table UFMatch');
+        
+        if($op == 'create') {
+  
+          $contact = \Civi\Api4\Contact::get(FALSE)
+            ->addSelect('*')
+            ->addWhere('id', '=', $objectRef[0])
+            ->addChain('email_data', \Civi\Api4\Email::get(FALSE)
+              ->addWhere('contact_id', '=', '$id')
+            )
+            ->execute()
+            ->first();
+  
+          $groupContacts = \Civi\Api4\GroupContact::get(FALSE)
+            ->addSelect('*', 'custom.*','group_id.name')
+            ->addWhere('group_id', '=', $objectId)
+            ->addWhere('contact_id', 'IN', $objectRef)
+            ->execute()
+            ->first();
+  
+          $user_data = [
+            'user_login' => sanitize_text_field($contact['email_data'][0]['email']),
+            'first_name' => sanitize_text_field($contact['first_name']),
+            'last_name' => sanitize_text_field($contact['last_name']),
+            'user_email' => sanitize_email($contact['email_data'][0]['email']),
+            'user_pass' => wp_generate_password(8),
+          ];
+  
+          $user_id_wp = wp_insert_user($user_data);
+          if ( is_wp_error( $user_id_wp ) ) {
+            Civi::log()->debug('Creation of user WordPress doesn\'t works : contact civicrm : ' . $objectRef[0]);
+          }
+  
+          $nu = new WP_User($user_id_wp);
+          foreach ($map as $groupName => $roleName) {
+            if ($groupContacts['status'] == 'Added' && $groupName == $groupContacts['group_id.name']) {
+              Civi::log()->debug('Has role ' . $groupName);
+              $nu->add_role($roleName);
+            }
+          }
+  
+          Civi::log()->debug('log before register user');
+          $register_user = register_new_user( $user_data['user_login'], $user_data['user_email'] );
+          if( is_wp_error( $register_user ) ) {
+            Civi::log()->debug('Register of user WordPress doens\'t works : contact civicrm : ' . $objectRef[0]);
+          } else {
+            Civi::log()->debug('Register user WordPress is ok : ' . $objectRef[0]);
+          }
+          
+        }
       }
     
     } else {

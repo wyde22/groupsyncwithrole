@@ -4,7 +4,7 @@
   class CRM_Groupsyncwithrole_Utils {
     
     public static function getGroupsCiviCRM() {
-      $defaultName = ts('-- Select a group --');
+      $defaultName = E::ts('-- Select a group --');
       $groupsSelect = [$defaultName];
       $groups = \Civi\Api4\Group::get(FALSE)
         ->addSelect('id', 'name', 'title')
@@ -18,7 +18,7 @@
     }
   
     public static function getRoleCMSWP() {
-      $defaultName = ts('-- Select a WordPress role --');
+      $defaultName = E::ts('-- Select a WordPress role --');
       $roleSelect = [$defaultName];
       $roles_obj = new WP_Roles();
       $roles_names_array = $roles_obj->get_names();

@@ -53,7 +53,7 @@
         });
 
         // Add buttons to even rows and set up event listeners
-        const rows = document.querySelectorAll('.form-layout tr');
+        const rows = document.querySelectorAll('#Generic .form-layout tr');
         rows.forEach((row, index) => {
             if ((index + 1) % 2 === 0) { // even rows (1-based index)
                 const button = document.createElement('button');
