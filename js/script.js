@@ -27,7 +27,6 @@
                 options.forEach(option => {
                     if (selectedValues.includes(option.value) && option.value !== "0") {
                         option.classList.add('disabled-option');
-                        option.style.cursor = 'not-allowed';
                     } else {
                         option.classList.remove('disabled-option');
                     }
