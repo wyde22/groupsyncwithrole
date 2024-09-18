@@ -157,40 +157,25 @@ function groupsyncwithrole_civicrm_enable(): void {
             ->execute()
             ->first();
   
-          $user_data = [
-            'user_login' => $contact['email_data'][0]['email'],
-            'first_name' => sanitize_text_field($contact['first_name']),
-            'last_name' => sanitize_text_field($contact['last_name']),
-            'user_email' => $contact['email_data'][0]['email'],
-            'user_pass' => wp_generate_password(8)         ];
+          $cmsUserParams = [
+            'email' => $contact['email_data'][0]['email'],
+            'cms_name' => $contact['email_data'][0]['email'],
+            'cms_pass' => wp_generate_password(8),
+            'contactID' => $objectRef[0],
+            'notify' => TRUE,
+          ];
+          
+          $ufID = CRM_Core_BAO_CMSUser::create($cmsUserParams, 'email');
+          Civi::log()->debug('CRM_Core_BAO_CMSUser $ufID : ' . print_r($ufID,1));
   
-          $user_id_wp = wp_insert_user($user_data);
-          if ( is_wp_error( $user_id_wp ) ) {
-            Civi::log()->debug('Creation of user WordPress doesn\'t works : contact civicrm : ' . $objectRef[0]);
-          }
-  
-          $results = \Civi\Api4\UFMatch::create(FALSE)
-            ->addValue('domain_id', 'current_domain')
-            ->addValue('uf_id', $user_id_wp)
-            ->addValue('contact_id', $objectRef[0])
-            ->addValue('uf_name', $contact['email_data'][0]['email'])
-            ->execute();
-  
-          $nu = new WP_User($user_id_wp);
+          $nu = new WP_User($ufID);
           foreach ($map as $groupName => $roleName) {
             if ($groupContacts['status'] == 'Added' && $groupName == $groupContacts['group_id.name']) {
               Civi::log()->debug('Has role ' . $groupName);
               $nu->add_role($roleName);
             }
           }
-  
-          $register_user = register_new_user( $user_data['user_login'], $user_data['user_email'] );
-          if( is_wp_error( $register_user ) ) {
-            Civi::log()->debug('Register new user error : ' . print_r($register_user,1));
-            Civi::log()->debug('Register of user WordPress doens\'t works : contact civicrm : ' . $objectRef[0]);
-          } else {
-            Civi::log()->debug('Register user WordPress is ok : ' . $objectRef[0]);
-          }
+          
         }
         
       }
