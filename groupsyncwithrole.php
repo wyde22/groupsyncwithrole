@@ -19,31 +19,6 @@
     //Civi::dispatcher()->addListener('hook_civicrm_post', ['CRM_Groupsyncwithrole_SyncWpRole', 'syncWpRole'], -1000);
   }
   
-  function groupsyncwithrole_civicrm_buildForm($formName, &$form) {
-  
-  }
-  
-  function groupsyncwithrole_civicrm_postProcess($formName, &$form) {
-    if($formName == 'CRM_Admin_Form_Generic') {
-      $url = $form->_attributes["action"];
-      if(!empty($url)) {
-        $parse = parse_url($url, PHP_URL_QUERY);
-        $findme = 'groupsyncwithrole';
-        $pos = strpos($parse, $findme);
-        if ($pos === false) {
-          Civi::log()->debug('thr string groupsyncwithrole doesn\'t exist');
-        } else {
-        
-          $settingDefaultRole = Civi::settings()->get('activate_desactivate_default_role_wp');
-          if($settingDefaultRole == '0') {
-            update_option('default_role','');
-          }
-        
-        }
-      }
-    }
-  }
-  
   /**
    * Implements hook_civicrm_install().
    *
@@ -213,6 +188,8 @@
             if ($groupContacts['status'] == 'Added' && $groupName == $groupContacts['group_id.name']) {
               Civi::log()->debug('Has role ' . $groupName);
               $nu->add_role($roleName);
+  
+              CRM_Groupsyncwithrole_Utils::removeDefaultRoleWP($nu);
             }
           }
         }

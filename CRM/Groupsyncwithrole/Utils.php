@@ -47,4 +47,12 @@
       
       return $map;
     }
+    
+    public static function removeDefaultRoleWP($userObject) {
+      $defaultRole = get_option('default_role');
+      $settingDefaultRole = Civi::settings()->get('activate_desactivate_default_role_wp');
+      if($settingDefaultRole == '0') {
+        $userObject->remove_role($defaultRole);
+      }
+    }
 }
