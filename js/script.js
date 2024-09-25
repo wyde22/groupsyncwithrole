@@ -1,4 +1,4 @@
-(function($) {
+(function($, _, ts) {
     document.addEventListener('DOMContentLoaded', function () {
         // Array to store the values of the selected options
         const selectedValues = [];
@@ -58,7 +58,7 @@
                 const button = document.createElement('button');
                 button.type = 'button';
                 button.classList.add('default', 'crm-button');
-                button.textContent = 'Break the mapping';
+                button.textContent = ts('Remove the sync');
 
                 button.addEventListener('click', function () {
                     const selectsInRow = row.querySelectorAll('select');
@@ -100,4 +100,4 @@
             }
         });
     });
-})(CRM.$ || cj);
+})(CRM.$, CRM._, CRM.ts('groupsyncwithrole'));
