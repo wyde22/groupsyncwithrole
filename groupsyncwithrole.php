@@ -118,6 +118,10 @@
               $u->add_role($roleName);
             }
           }
+  
+          // if setting Add also WP default role when synchronizing is on not radio
+          // check if user have anonymous role. If user have anonymous role. Remove this role for reintegration
+          CRM_Groupsyncwithrole_Utils::removeAnonymousUserRole($u);
         }
         
         // remove the contact of group
@@ -128,6 +132,10 @@
               $u->remove_role($roleName);
             }
           }
+          
+          // if setting Add also WP default role when synchronizing is on not radio
+          // check if user have a role. If user don't have a role add anonymous role
+          CRM_Groupsyncwithrole_Utils::addAnonymousUserRole($u);
         }
         
         // delete contact of group
@@ -147,6 +155,10 @@
               $u->remove_role($roleName);
             }
           }
+  
+          // if setting Add also WP default role when synchronizing is on not radio
+          // check if user have a role. If user don't have a role add anonymous role
+          CRM_Groupsyncwithrole_Utils::addAnonymousUserRole($u);
         }
       } else {
         Civi::log()
