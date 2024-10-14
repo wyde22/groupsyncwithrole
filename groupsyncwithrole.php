@@ -66,22 +66,25 @@ function groupsyncwithrole_civicrm_enable(): void {
     ];*/
     
     $map = CRM_Groupsyncwithrole_Utils::getSettingsGroupSyncWPRoleForMap();
-  
-    if (in_array($objectName, ['GroupContact']) && in_array($op,
-        ['create', 'edit', 'delete'])) {
     
-      if (CRM_Core_Transaction::isActive()) {
+    // treatment sync if synchronisation settings exist
+    if(count($map) > 0) {
+      if (in_array($objectName, ['GroupContact']) && in_array($op,
+          ['create', 'edit', 'delete'])) {
+    
+        if (CRM_Core_Transaction::isActive()) {
       
-        CRM_Core_Transaction::addCallback(CRM_Core_Transaction::PHASE_POST_COMMIT,
-          'groupsyncwithrole_civicrm_post_groupcontact_callback',
-          [$op, $objectName, $objectId, $objectRef, $map]);
-      } else {
-        
-        groupsyncwithrole_civicrm_post_groupcontact_callback($op,
-          $objectName,
-          $objectId,
-          $objectRef,
-          $map);
+          CRM_Core_Transaction::addCallback(CRM_Core_Transaction::PHASE_POST_COMMIT,
+            'groupsyncwithrole_civicrm_post_groupcontact_callback',
+            [$op, $objectName, $objectId, $objectRef, $map]);
+        } else {
+      
+          groupsyncwithrole_civicrm_post_groupcontact_callback($op,
+            $objectName,
+            $objectId,
+            $objectRef,
+            $map);
+        }
       }
     }
   }
