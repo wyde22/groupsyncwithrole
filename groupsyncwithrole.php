@@ -12,10 +12,19 @@ use CRM_Groupsyncwithrole_ExtensionUtil as E;
 function groupsyncwithrole_civicrm_config(&$config): void {
   _groupsyncwithrole_civix_civicrm_config($config);
   Civi::resources()->addStyleFile('groupsyncwithrole', 'css/styles.css');
-  Civi::resources()->addScriptFile('groupsyncwithrole', 'js/script.js');
   
   // in the future hook symfony in this place !!
   //Civi::dispatcher()->addListener('hook_civicrm_post', ['CRM_Groupsyncwithrole_SyncWpRole', 'syncWpRole'], -1000);
+}
+
+function groupsyncwithrole_civicrm_buildForm($formName, &$form) {
+  if($formName == 'CRM_Admin_Form_Generic') {
+    $url_path = $form->getVar('urlPath');
+    $search_groupsyncwithrole_setting_page = array_search('groupsyncwithrole',$url_path);
+    if($search_groupsyncwithrole_setting_page) {
+      Civi::resources()->addScriptFile('groupsyncwithrole', 'js/script.js');
+    }
+  }
 }
 
 /**
@@ -57,22 +66,25 @@ function groupsyncwithrole_civicrm_enable(): void {
     ];*/
     
     $map = CRM_Groupsyncwithrole_Utils::getSettingsGroupSyncWPRoleForMap();
-  
-    if (in_array($objectName, ['GroupContact']) && in_array($op,
-        ['create', 'edit', 'delete'])) {
     
-      if (CRM_Core_Transaction::isActive()) {
+    // treatment sync if synchronisation settings exist
+    if(count($map) > 0) {
+      if (in_array($objectName, ['GroupContact']) && in_array($op,
+          ['create', 'edit', 'delete'])) {
+    
+        if (CRM_Core_Transaction::isActive()) {
       
-        CRM_Core_Transaction::addCallback(CRM_Core_Transaction::PHASE_POST_COMMIT,
-          'groupsyncwithrole_civicrm_post_groupcontact_callback',
-          [$op, $objectName, $objectId, $objectRef, $map]);
-      } else {
-        
-        groupsyncwithrole_civicrm_post_groupcontact_callback($op,
-          $objectName,
-          $objectId,
-          $objectRef,
-          $map);
+          CRM_Core_Transaction::addCallback(CRM_Core_Transaction::PHASE_POST_COMMIT,
+            'groupsyncwithrole_civicrm_post_groupcontact_callback',
+            [$op, $objectName, $objectId, $objectRef, $map]);
+        } else {
+      
+          groupsyncwithrole_civicrm_post_groupcontact_callback($op,
+            $objectName,
+            $objectId,
+            $objectRef,
+            $map);
+        }
       }
     }
   }

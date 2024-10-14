@@ -7,7 +7,7 @@ This extension manages the synchronization between CiviCRM groups and the roles 
 
 ## Getting Started
 
-After installation, you have a seeting page for map CiviCRM groups and role WordPress. This page is on this menu : Administer > Customize Data and screens > Synchronisation Groupe - WP roles.
+After installation, you have a seeting page for map CiviCRM groups and role WordPress. This page is on this menu : Administer > Customize Data and screens > Synchronisation Groupe - WP roles (url of setting page : `civicrm/admin/setting/groupsyncwithrole`).
 In this page, you have 10 lines of 2 select for create your mapping between Groups CiviCRM and WordPress role.
 
 for a good synchronization it's necessary to create all the wordpress roles you need before use this extension
@@ -25,4 +25,10 @@ If you find a problem, you can create an issue in this repo please
 ## Requirements
 
 For a good synchronization between CiviCRM groups and role of user, the user contact must exist in the table `UFMatch`.
-Often i test my code with extension `cmsuser`. It's necessary to have a `civirules` etxension in your project
+Often i test my code with extension `cmsuser`. Now with the last version, when a contact without user role is added in a CiviCRM group,
+the contact is registered in WordPress with the specific user role
+
+## Next steps
+
+- Add support to create a CMS user if it doesn't already exist -> DONE
+- Change CMS user's role when the contact is removed/suppressed from a sync group

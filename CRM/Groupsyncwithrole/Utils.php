@@ -47,4 +47,26 @@
       
       return $map;
     }
+    
+    public static function removeDefaultRoleWP($userObject) {
+      $defaultRole = get_option('default_role');
+      $settingDefaultRole = Civi::settings()->get('activate_desactivate_default_role_wp');
+      if($settingDefaultRole == '0') {
+        $userObject->remove_role($defaultRole);
+      }
+    }
+    
+    public static function addAnonymousUserRole($userObject) {
+      $ug = get_user_by('ID', $userObject->data->ID);
+      if (count($ug->roles) == 0) {
+        $userObject->add_role('anonymous_user');
+      }
+    }
+  
+    public static function removeAnonymousUserRole($userObject) {
+      $ug = get_user_by('ID', $userObject->data->ID);
+      if (in_array('anonymous_user',$ug->roles)) {
+        $userObject->remove_role('anonymous_user');
+      }
+    }
 }
