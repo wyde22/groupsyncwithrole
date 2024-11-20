@@ -92,9 +92,9 @@ function groupsyncwithrole_civicrm_enable(): void {
    */
   function groupsyncwithrole_civicrm_post_groupcontact_callback($op, $objectName, $objectId, $objectRef, $map)
   {
-//    Civi::log()->debug('groupsyncwithrole_civicrm_post_groupcontact_callback $objectRef : ' . print_r($objectRef,1));
-//    Civi::log()->debug('groupsyncwithrole_civicrm_post_groupcontact_callback $objectId : ' . print_r($objectId,1));
-//    Civi::log()->debug('groupsyncwithrole_civicrm_post_groupcontact_callback $objectName : ' . print_r($objectName,1));
+  // Civi::log()->debug('groupsyncwithrole_civicrm_post_groupcontact_callback $objectRef : ' . print_r($objectRef,1));
+  // Civi::log()->debug('groupsyncwithrole_civicrm_post_groupcontact_callback $objectId : ' . print_r($objectId,1));
+  // Civi::log()->debug('groupsyncwithrole_civicrm_post_groupcontact_callback $objectName : ' . print_r($objectName,1));
     
     if(!empty($objectRef)) {
     
@@ -104,7 +104,7 @@ function groupsyncwithrole_civicrm_enable(): void {
         ->addWhere('contact_id', 'IN', $objectRef)
         ->execute();
       
-//      Civi::log()->debug('groupsyncwithrole_civicrm_post_groupcontact_callback $uFMatches : ' . print_r($uFMatches,1));
+      // Civi::log()->debug('groupsyncwithrole_civicrm_post_groupcontact_callback $uFMatches : ' . print_r($uFMatches,1));
       if(!empty($uFMatches)) {
         
         foreach ($uFMatches as $u_f_match) {
@@ -112,8 +112,8 @@ function groupsyncwithrole_civicrm_enable(): void {
           if($u_f_match['uf_id']) {
             $u = new WP_User($u_f_match['uf_id']);
   
-//            Civi::log()->debug('groupsyncwithrole_civicrm_post_groupcontact_callback loop $u : ' . print_r($u,1));
-//            Civi::log()->debug('groupsyncwithrole_civicrm_post_groupcontact_callback loop $u_f_match : ' . print_r($u_f_match,1));
+      // Civi::log()->debug('groupsyncwithrole_civicrm_post_groupcontact_callback loop $u : ' . print_r($u,1));
+      // Civi::log()->debug('groupsyncwithrole_civicrm_post_groupcontact_callback loop $u_f_match : ' . print_r($u_f_match,1));
   
             $groupContacts = \Civi\Api4\GroupContact::get(FALSE)
               ->addSelect('*', 'custom.*','group_id.name')
@@ -122,8 +122,8 @@ function groupsyncwithrole_civicrm_enable(): void {
               ->execute()
               ->first();
   
-//            Civi::log()->debug('groupsyncwithrole_civicrm_post_groupcontact_callback loop $groupContacts : ' . print_r($groupContacts,1));
-//            Civi::log()->debug('groupsyncwithrole_civicrm_post_groupcontact_callback loop $op : ' . print_r($op,1));
+      // Civi::log()->debug('groupsyncwithrole_civicrm_post_groupcontact_callback loop $groupContacts : ' . print_r($groupContacts,1));
+      // Civi::log()->debug('groupsyncwithrole_civicrm_post_groupcontact_callback loop $op : ' . print_r($op,1));
   
             // addition or reintegration contact in the group
             if($op == 'create') {
@@ -195,16 +195,16 @@ function groupsyncwithrole_civicrm_enable(): void {
               'contactID' => $objectRef[0],
               'notify' => TRUE,
             ];
-//            Civi::log()->debug('groupsyncwithrole_civicrm_post_groupcontact_callback $contact : ' . print_r($contact,1));
-//            Civi::log()->debug('groupsyncwithrole_civicrm_post_groupcontact_callback $groupContacts : ' . print_r($groupContacts,1));
+        //  Civi::log()->debug('groupsyncwithrole_civicrm_post_groupcontact_callback $contact : ' . print_r($contact,1));
+        //  Civi::log()->debug('groupsyncwithrole_civicrm_post_groupcontact_callback $groupContacts : ' . print_r($groupContacts,1));
     
             $ufID = CRM_Core_BAO_CMSUser::create($cmsUserParams, 'email');
-//            Civi::log()->debug('CRM_Core_BAO_CMSUser $ufID : ' . print_r($ufID,1));
+        //  Civi::log()->debug('CRM_Core_BAO_CMSUser $ufID : ' . print_r($ufID,1));
     
-//            Civi::log()->debug('groupsyncwithrole_civicrm_post_groupcontact_callback $ufID : ' . print_r($ufID,1));
+        //  Civi::log()->debug('groupsyncwithrole_civicrm_post_groupcontact_callback $ufID : ' . print_r($ufID,1));
     
             $nu = new WP_User($ufID);
-//            Civi::log()->debug('groupsyncwithrole_civicrm_post_groupcontact_callback $nu : ' . print_r($nu,1));
+        // Civi::log()->debug('groupsyncwithrole_civicrm_post_groupcontact_callback $nu : ' . print_r($nu,1));
             foreach ($map as $groupName => $roleName) {
               if ($groupContacts['status'] == 'Added' && $groupName == $groupContacts['group_id.name']) {
                 Civi::log()->debug('Has role ' . $groupName);
