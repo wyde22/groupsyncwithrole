@@ -12,7 +12,7 @@ use CRM_Groupsyncwithrole_ExtensionUtil as E;
 function groupsyncwithrole_civicrm_config(&$config): void {
   _groupsyncwithrole_civix_civicrm_config($config);
   Civi::resources()->addStyleFile('groupsyncwithrole', 'css/styles.css');
-  
+
   // in the future hook symfony in this place !!
   //Civi::dispatcher()->addListener('hook_civicrm_post', ['CRM_Groupsyncwithrole_SyncWpRole', 'syncWpRole'], -1000);
 }
@@ -44,7 +44,7 @@ function groupsyncwithrole_civicrm_install(): void {
 function groupsyncwithrole_civicrm_enable(): void {
   _groupsyncwithrole_civix_civicrm_enable();
 }
-  
+
   /**
    * This hook is called after a db write on entities.
    *
@@ -64,29 +64,40 @@ function groupsyncwithrole_civicrm_enable(): void {
       'medical_2' => 'medical',
       'Auteur_3' => 'author'
     ];*/
-    
+
     $map = CRM_Groupsyncwithrole_Utils::getSettingsGroupSyncWPRoleForMap();
 //    Civi::log()->debug('groupsyncwithrole_civicrm_post_groupcontact_callback $map : ' . print_r($map,1));
-  
+
     if (in_array($objectName, ['GroupContact']) && in_array($op,
         ['create', 'edit', 'delete'])) {
-    
+
+      /*
+       * When using API4, callbacks to `civicrm_post` receive an object, not an array of
+       * Contact IDs. This should accommodate this situation.
+       */
+      if (!is_array($objectRef) && $objectRef instanceof CRM_Contact_BAO_GroupContact) {
+        $contact_ids = [$objectRef->id];
+      }
+      else {
+        $contact_ids = $objectRef;
+      }
+
       if (CRM_Core_Transaction::isActive()) {
-      
+
         CRM_Core_Transaction::addCallback(CRM_Core_Transaction::PHASE_POST_COMMIT,
           'groupsyncwithrole_civicrm_post_groupcontact_callback',
-          [$op, $objectName, $objectId, $objectRef, $map]);
+          [$op, $objectName, $objectId, $contact_ids, $map]);
       } else {
-        
+
         groupsyncwithrole_civicrm_post_groupcontact_callback($op,
           $objectName,
           $objectId,
-          $objectRef,
+          $contact_ids,
           $map);
       }
     }
   }
-  
+
   /**
    * Synchronize the WP role and CiviCRM contact group
    */
@@ -95,36 +106,36 @@ function groupsyncwithrole_civicrm_enable(): void {
   // Civi::log()->debug('groupsyncwithrole_civicrm_post_groupcontact_callback $objectRef : ' . print_r($objectRef,1));
   // Civi::log()->debug('groupsyncwithrole_civicrm_post_groupcontact_callback $objectId : ' . print_r($objectId,1));
   // Civi::log()->debug('groupsyncwithrole_civicrm_post_groupcontact_callback $objectName : ' . print_r($objectName,1));
-    
+
     if(!empty($objectRef)) {
-    
+
       // search uf_id
       $uFMatches = \Civi\Api4\UFMatch::get(FALSE)
         ->addSelect('uf_id')
         ->addWhere('contact_id', 'IN', $objectRef)
         ->execute();
-      
+
       // Civi::log()->debug('groupsyncwithrole_civicrm_post_groupcontact_callback $uFMatches : ' . print_r($uFMatches,1));
       if(!empty($uFMatches)) {
-        
+
         foreach ($uFMatches as $u_f_match) {
-          
+
           if($u_f_match['uf_id']) {
             $u = new WP_User($u_f_match['uf_id']);
-  
+
       // Civi::log()->debug('groupsyncwithrole_civicrm_post_groupcontact_callback loop $u : ' . print_r($u,1));
       // Civi::log()->debug('groupsyncwithrole_civicrm_post_groupcontact_callback loop $u_f_match : ' . print_r($u_f_match,1));
-  
+
             $groupContacts = \Civi\Api4\GroupContact::get(FALSE)
               ->addSelect('*', 'custom.*','group_id.name')
               ->addWhere('group_id', '=', $objectId)
               ->addWhere('contact_id', 'IN', $objectRef)
               ->execute()
               ->first();
-  
+
       // Civi::log()->debug('groupsyncwithrole_civicrm_post_groupcontact_callback loop $groupContacts : ' . print_r($groupContacts,1));
       // Civi::log()->debug('groupsyncwithrole_civicrm_post_groupcontact_callback loop $op : ' . print_r($op,1));
-  
+
             // addition or reintegration contact in the group
             if($op == 'create') {
               foreach ($map as $groupName => $roleName) {
@@ -134,7 +145,7 @@ function groupsyncwithrole_civicrm_enable(): void {
                 }
               }
             }
-  
+
             // remove the contact of group
             if($op == 'delete') {
               foreach ($map as $groupName => $roleName) {
@@ -144,7 +155,7 @@ function groupsyncwithrole_civicrm_enable(): void {
                 }
               }
             }
-  
+
             // delete contact of group
             if($op == 'delete' && empty($groupContacts)) {
               $groupDeleted = \Civi\Api4\Group::get(FALSE)
@@ -152,7 +163,7 @@ function groupsyncwithrole_civicrm_enable(): void {
                 ->addWhere('id', '=', $objectId)
                 ->execute()
                 ->first();
-    
+
               foreach ($map as $groupName => $roleName) {
                 if ($groupName == $groupDeleted['name']) {
                   Civi::log()->debug('Remove role after delete contact of group ' . $groupName);
@@ -161,14 +172,14 @@ function groupsyncwithrole_civicrm_enable(): void {
               }
             }
           }
-          
+
         }
-      
+
       } else {
         Civi::log()->debug('Contact ID '. $objectRef[0] .' doesn\'t exist in table UFMatch');
-        
+
         $countObjectRef = count($objectRef);
-        
+
         // create an user WordPress when a contact CiviCRM exist only on one contact no bulk with advanced search
         if($countObjectRef == 1) {
           if($op =='create') {
@@ -180,14 +191,14 @@ function groupsyncwithrole_civicrm_enable(): void {
               )
               ->execute()
               ->first();
-    
+
             $groupContacts = \Civi\Api4\GroupContact::get(FALSE)
               ->addSelect('*', 'custom.*','group_id.name')
               ->addWhere('group_id', '=', $objectId)
               ->addWhere('contact_id', 'IN', $objectRef)
               ->execute()
               ->first();
-    
+
             $cmsUserParams = [
               'email' => $contact['email_data'][0]['email'],
               'cms_name' => $contact['email_data'][0]['email'],
@@ -197,12 +208,12 @@ function groupsyncwithrole_civicrm_enable(): void {
             ];
         //  Civi::log()->debug('groupsyncwithrole_civicrm_post_groupcontact_callback $contact : ' . print_r($contact,1));
         //  Civi::log()->debug('groupsyncwithrole_civicrm_post_groupcontact_callback $groupContacts : ' . print_r($groupContacts,1));
-    
+
             $ufID = CRM_Core_BAO_CMSUser::create($cmsUserParams, 'email');
         //  Civi::log()->debug('CRM_Core_BAO_CMSUser $ufID : ' . print_r($ufID,1));
-    
+
         //  Civi::log()->debug('groupsyncwithrole_civicrm_post_groupcontact_callback $ufID : ' . print_r($ufID,1));
-    
+
             $nu = new WP_User($ufID);
         // Civi::log()->debug('groupsyncwithrole_civicrm_post_groupcontact_callback $nu : ' . print_r($nu,1));
             foreach ($map as $groupName => $roleName) {
@@ -211,12 +222,12 @@ function groupsyncwithrole_civicrm_enable(): void {
                 $nu->add_role($roleName);
               }
             }
-    
+
           }
         }
-        
+
       }
-    
+
     } else {
       Civi::log()->debug('synchronisation groups doesn\'t works -- role : $objectRef is empty');
     }
