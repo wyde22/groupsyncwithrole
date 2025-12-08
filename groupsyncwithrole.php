@@ -76,7 +76,11 @@ function groupsyncwithrole_civicrm_enable(): void {
        * Contact IDs. This should accommodate this situation.
        */
       if (!is_array($objectRef) && $objectRef instanceof CRM_Contact_BAO_GroupContact) {
+<<<<<<< HEAD
         $contact_ids = [$objectRef->id];
+=======
+        $contact_ids = [$objectRef->contact_id];
+>>>>>>> 9d77fc3 (Fix by Haystack)
       }
       else {
         $contact_ids = $objectRef;
