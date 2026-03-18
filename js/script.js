@@ -1,29 +1,36 @@
 (function($, _, ts) {
     document.addEventListener('DOMContentLoaded', function () {
-        // Array to store the values of the selected options
+        const tbody = document.querySelector('.crm-setting-block-groupsyncwithrole table.form-layout-compressed > tbody');
+        if (tbody) {
+            const activateRow = tbody.querySelector('tr.crm-setting-form-block-activate_desactivate_default_role_wp');
+            const orderedRows = [];
+            if (activateRow) orderedRows.push(activateRow);
+
+            for (let i = 1; i <= 10; i++) {
+                const groupRow = tbody.querySelector('tr.crm-setting-form-block-select_group_' + i);
+                const roleRow = tbody.querySelector('tr.crm-setting-form-block-select_rolecms_' + i);
+                if (groupRow) orderedRows.push(groupRow);
+                if (roleRow) orderedRows.push(roleRow);
+            }
+
+            orderedRows.forEach(row => tbody.appendChild(row));
+        }
+
         const selectedValues = [];
 
-        // Function to disable all selected options on the page
         function disableSelectedOptions() {
-            // Get all <select> elements on the page
-            const selectElements = document.querySelectorAll('select');
+            selectedValues.length = 0;
+            const selectElements = document.querySelectorAll('.crm-setting-block-groupsyncwithrole select');
 
-            // Cycle through all <select> elements
             selectElements.forEach(select => {
-                // Get the currently selected option
                 const selectedOption = select.options[select.selectedIndex];
-
-                // Check if an option is selected
                 if (selectedOption && selectedOption.value !== "0") {
-                    // Add the value of the selected option to the array
                     selectedValues.push(selectedOption.value);
                 }
             });
 
-            // Disable options with selected values
             selectElements.forEach(select => {
                 const options = select.querySelectorAll('option');
-
                 options.forEach(option => {
                     if (selectedValues.includes(option.value) && option.value !== "0") {
                         option.classList.add('disabled-option');
@@ -34,7 +41,6 @@
             });
         }
 
-        // Call the function to deactivate the selected options on page load
         disableSelectedOptions();
 
         function removeItemArray(item) {
@@ -45,59 +51,39 @@
             }
         }
 
-        // Add a change event listener for each <select> to update disabled options in real time
-        const selectElements = document.querySelectorAll('select');
+        const selectElements = document.querySelectorAll('.crm-setting-block-groupsyncwithrole select');
         selectElements.forEach(select => {
             select.addEventListener('change', disableSelectedOptions);
         });
 
-        // Add buttons to even rows and set up event listeners
-        const rows = document.querySelectorAll('#Generic .form-layout tr');
-        rows.forEach((row, index) => {
-            if ((index + 1) % 2 === 0) { // even rows (1-based index)
-                const button = document.createElement('button');
-                button.type = 'button';
-                button.classList.add('default', 'crm-button');
-                button.textContent = ts('Remove the sync');
+        const roleRows = document.querySelectorAll('.crm-setting-block-groupsyncwithrole tr[class*="select_rolecms_"]');
+        roleRows.forEach(row => {
+            const selectInRow = row.querySelector('select');
+            if (!selectInRow) return;
 
-                button.addEventListener('click', function () {
-                    const selectsInRow = row.querySelectorAll('select');
+            const num = selectInRow.id.replace('select_rolecms_', '');
 
-                    // retrieve class of select group on the same line of select role
-                    const idSelect = selectsInRow[0].id;
-                    const lastCharacter = idSelect.slice(-1);
-                    let idSelectGroup = 'select_group_' + lastCharacter;
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.classList.add('default', 'crm-button');
+            button.textContent = ts('Remove the sync');
 
-                    // select group civicrm
-                    const selectGroupLine = document.getElementById(idSelectGroup);
-                    if(selectGroupLine) {
-                        const optionsGroupSelect = selectGroupLine.options;
-                        for(let i = 0; i < optionsGroupSelect.length; i++) {
-                            if(optionsGroupSelect[i].selected === true) {
-                                optionsGroupSelect[i].selected = false;
-                                removeItemArray(optionsGroupSelect[i].value);
-                            }
-                        }
-                        selectGroupLine.value = "0";
-                    }
+            button.addEventListener('click', function () {
+                const selectGroup = document.getElementById('select_group_' + num);
+                if (selectGroup) {
+                    const prev = selectGroup.value;
+                    selectGroup.value = "0";
+                    if (prev !== "0") removeItemArray(prev);
+                }
 
-                    // select WordPress role
-                    selectsInRow.forEach(selectWPRole => {
-                        const optionWPRole = selectWPRole.querySelectorAll('option');
-                        optionWPRole.forEach(optionWPRole => {
-                            if(optionWPRole.selected === true) {
-                                optionWPRole.selected = false;
-                                removeItemArray(optionWPRole.value);
-                            }
-                        });
-                        selectWPRole.value = "0";
-                    });
-                });
+                const prevRole = selectInRow.value;
+                selectInRow.value = "0";
+                if (prevRole !== "0") removeItemArray(prevRole);
+            });
 
-                const td = document.createElement('td');
-                td.appendChild(button);
-                row.appendChild(td);
-            }
+            const td = document.createElement('td');
+            td.appendChild(button);
+            row.appendChild(td);
         });
     });
 })(CRM.$, CRM._, CRM.ts('groupsyncwithrole'));

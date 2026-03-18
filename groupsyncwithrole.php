@@ -78,6 +78,9 @@ function groupsyncwithrole_civicrm_enable(): void {
       if (!is_array($objectRef) && $objectRef instanceof CRM_Contact_BAO_GroupContact) {
         $contact_ids = [$objectRef->contact_id];
       }
+      elseif (!is_array($objectRef) && $objectRef instanceof CRM_Contact_DAO_GroupContact) {
+        $contact_ids = [$objectRef->contact_id];
+      }
       else {
         $contact_ids = $objectRef;
       }

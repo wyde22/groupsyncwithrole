@@ -1,6 +1,20 @@
 <?php
   use CRM_Groupsyncwithrole_ExtensionUtil as E;
   return [
+    'activate_desactivate_default_role_wp' => [
+      'name' => 'activate_desactivate_default_role_wp',
+      'type' => 'Boolean',
+      'quick_form_type' => 'YesNo',
+      'default' => 'Yes',
+      'html_type' => 'radio',
+      'title' => E::ts('Add also WP default role when synchronizing'),
+      'is_domain' => 1,
+      'is_contact' => 0,
+      'description' => E::ts("WordPress automatically adds a default role (<a href=\"/wp-admin/options-general.php\">default role WordPress</a>) but this option allows to skip this setting"),
+      'help_text' => NULL,
+      'settings_pages' => ['groupsyncwithrole' => ['weight' => 150]],
+    ],
+
     'select_group_1' => [
       'name' => 'select_group_1',
       'type' => 'String',
@@ -268,20 +282,6 @@
       'is_contact' => 0,
       'description' => E::ts('Select WordPress role 10'),
       'options' => CRM_Groupsyncwithrole_Utils::getRoleCMSWP(),
-      'settings_pages' => ['groupsyncwithrole' => ['weight' => 150]],
-    ],
-
-    'activate_desactivate_default_role_wp' => [
-      'name' => 'activate_desactivate_default_role_wp',
-      'type' => 'Boolean',
-      'quick_form_type' => 'YesNo',
-      'default' => 'Yes',
-      'html_type' => 'radio',
-      'title' => E::ts('Add also WP default role when synchronizing'),
-      'is_domain' => 1,
-      'is_contact' => 0,
-      'description' => E::ts("WordPress automatically adds a default role (<a href=\"/wp-admin/options-general.php\">default role WordPress</a>) but this option allows to skip this setting"),
-      'help_text' => NULL,
       'settings_pages' => ['groupsyncwithrole' => ['weight' => 150]],
     ],
   ];

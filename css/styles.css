@@ -1,8 +1,43 @@
-#wrapper-settings-groupsyncwithrole, #crm-main-content-wrapper .CRM_Admin_Form_Generic table tbody {
+.crm-setting-block-groupsyncwithrole .crm-setting-section-default > table.form-layout-compressed > tbody {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-auto-flow: row;
-    margin: 50px 0;
+    gap: 12px 24px;
+    margin: 30px 0;
+}
+
+.crm-setting-block-groupsyncwithrole table.form-layout-compressed > tbody > tr {
+    display: block;
+}
+
+.crm-setting-block-groupsyncwithrole table.form-layout-compressed > tbody > tr > td {
+    display: block;
+}
+
+.crm-setting-block-groupsyncwithrole table.form-layout-compressed > tbody > tr > td.label {
+    font-weight: 600;
+    margin-bottom: 4px;
+    width: 170px;
+}
+
+.crm-setting-block-groupsyncwithrole table.form-layout-compressed > tbody > tr.crm-setting-form-block-activate_desactivate_default_role_wp {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: #f5f5f5;
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+
+.crm-setting-block-groupsyncwithrole table.form-layout-compressed > tbody > tr.crm-setting-form-block-activate_desactivate_default_role_wp > td.label {
+    margin-bottom: 0;
+}
+
+.crm-setting-block-groupsyncwithrole select.crm-form-select {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .disabled-option {
