@@ -20,11 +20,12 @@
     public static function getRoleCMSWP() {
       $defaultName = E::ts('-- Select a WordPress role --');
       $roleSelect = [$defaultName];
-      $roles_obj = WP_Roles();
-      $roles_names_array = $roles_obj->get_names();
-      foreach ($roles_names_array as $key => $role_name) {
-        // do something
-        $roleSelect[$key] = $role_name;
+      if (!function_exists('wp_roles')) {
+        return $roleSelect;
+      }
+
+      foreach (wp_roles()->get_names() as $key => $roleName) {
+        $roleSelect[$key] = $roleName;
       }
     
       return $roleSelect;
